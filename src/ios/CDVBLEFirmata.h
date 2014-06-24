@@ -45,6 +45,8 @@
 - (void)connect:(CDVInvokedUrlCommand *)command;
 - (void)disconnect:(CDVInvokedUrlCommand *)command;
 
+- (void)pinMode:(CDVInvokedUrlCommand *)command;
+
 @end
 
 #endif
