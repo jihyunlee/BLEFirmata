@@ -16,7 +16,15 @@
 
 #import "BLECentral.h"
 
+#define MAX_CELL_COUNT 20
+#define DIGITAL_PIN_SECTION 0
+#define ANALOG_PIN_SECTION 1
+#define FIRST_DIGITAL_PIN 3
+#define LAST_DIGITAL_PIN 8
+#define FIRST_ANALOG_PIN 14
+#define LAST_ANALOG_PIN 19
 #define PORT_COUNT 3
+
 
 @class CDVBLEFirmata;
 
