@@ -48,8 +48,6 @@
 - (void)connect:(NSString*)uuid;
 - (void)disconnect;
 
-- (void)cleanup;
-
 - (UInt16)swap:(UInt16) s;
 - (int)compareCBUUID:(CBUUID *) UUID1 UUID2:(CBUUID *)UUID2;
 - (int)compareCBUUIDToInt:(CBUUID *) UUID1 UUID2:(UInt16)UUID2;

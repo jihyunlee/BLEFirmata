@@ -228,35 +228,6 @@ static int state = -1;
 }
 
 
-#pragma mark - Peripheral Methods
-
-
-- (void)cleanup {
-  // Don't do anything if we're not connected
-  if (!self.activePeripheral.isConnected) return;
-  
-  // See if we are subscribed to a characteristic on the peripheral
-  if (self.activePeripheral.services != nil) {
-    for (CBService *service in self.activePeripheral.services) {
-      if (service.characteristics != nil) {
-        for (CBCharacteristic *characteristic in service.characteristics) {
-          if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]]) {
-            if (characteristic.isNotifying) {
-              // It is notifying, so unsubscribe
-              [self.activePeripheral setNotifyValue:NO forCharacteristic:characteristic];
-              
-              // And we're done.
-              return;
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  // If we've got this far, we're connected, but we're not subscribed, so we just disconnect
-  [self.centralManager cancelPeripheralConnection:self.activePeripheral];
-}
 
 -(NSString *) CBUUIDToString:(CBUUID *)cbuuid {
   NSData *d = cbuuid.data;
