@@ -17,6 +17,8 @@
  * under the License.
  */
 
+var bleFirmata;
+
 var app = {
   initialize: function() {
     this.bindEvents();
@@ -28,7 +30,7 @@ var app = {
       
     if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
 
-    app.bleFirmata = new BLEFirmata();
+    bleFirmata = new BLEFirmata();
     app.startScan();
   },
   startScan: function() {
@@ -41,6 +43,11 @@ var app = {
       if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
 
       console.log('didDiscover -- ', name, uuid);
+
+      if(name == 'UART') {
+        app.stopScan();
+        app.connect(uuid);
+      }
     };
 
     bleFirmata.startScan(didDiscover, function(err){console.log('startScan Failed');});
