@@ -176,7 +176,7 @@ static int state = -1;
   NSDictionary* dic = [NSDictionary dictionaryWithObjectsAndKeys: peripheral.name, @"name", [peripheral.identifier UUIDString], @"uuid", localName, @"localname", nil];
   [[self delegate] didDiscoverPeripheral:dic];
   
-  [peripheral setAdvertisementData:advertisementData RSSI:RSSI];
+  // [peripheral setAdvertisementData:advertisementData RSSI:RSSI];
 
   if (!self.peripherals) self.peripherals = [[NSMutableArray alloc] initWithObjects:peripheral,nil];
   else [self.peripherals addObject:peripheral];
