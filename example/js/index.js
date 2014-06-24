@@ -18,18 +18,47 @@
  */
 
 var app = {
-    initialize: function() {
-        this.bindEvents();
-    },
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    onDeviceReady: function() {
-        
-        if(window.cordova.logger) {
-            window.cordova.logger.__onDeviceReady();
-        }
-        
-        app.bm = new BLEFirmata();
-    }
+  initialize: function() {
+    this.bindEvents();
+  },
+  bindEvents: function() {
+    document.addEventListener('deviceready', this.onDeviceReady, false);
+  },
+  onDeviceReady: function() {
+      
+    if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
+
+    app.bleFirmata = new BLEFirmata();
+    app.startScan();
+  },
+  startScan: function() {
+    console.log('\n\nstartScan ----------\n\n');
+
+    var didDiscover = function(peripheral) {
+      var name = '',
+          uuid = '';
+      if(peripheral.hasOwnProperty('localname')) name = peripheral.localname;
+      if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
+
+      console.log('didDiscover -- ', name, uuid);
+    };
+
+    bleFirmata.startScan(didDiscover, function(err){console.log('startScan Failed');});
+  },
+  stopScan: function() {
+    console.log('stopScan ----------\n\n');
+    bleFirmata.stopScan(function(res){}, function(err){console.log('stopScan Failed');});
+  },
+  connect: function(uuid) {
+    console.log('connect --- ');
+
+    var didConnect = function(peripheral) {
+      console.log('didConnect --- ', peripheral.name, peripheral.uuid);
+      if(peripheral.uuid == uuid) {
+        console.log('\n\nbox is connected\n\n');
+      }
+    };
+
+    bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});      
+  }
 };
