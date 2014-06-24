@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="com.hellojihyun.cordova.plugin.BLEFirmata"
+    version="1.0.0">
+
+    <name>BLEFirmata Plugin for Cordova</name>
+    <description>BLEFirmata</description>
+    <license>Apache 2.0</license>
+    <keywords>BLE, Bluetooth Low Energy, Arduino, Bluefruit LE</keywords>	
+    
+    <engines>
+        <engine name="cordova" version=">=2.2.0" />
+    </engines>
+	
+    <asset src="www/BLEFirmata.js" target="plugins/BLEFirmata.js" />
+
+	<js-module src="www/BLEFirmata.js" name="BLEFirmata">
+    	<clobbers target="window.BLEFirmata" />
+	</js-module>
+	
+    <!-- ios -->
+    <platform name="ios">
+        <!-- feature tag in config.xml -->
+        <config-file target="config.xml" parent="/widget">
+          <feature name="BLEFirmata">
+            <param name="ios-package" value="CDVBLEFirmata"/>
+          </feature>
+        </config-file>
+        
+        <header-file src="src/ios/CDVBLEFirmata.h" />
+        <source-file src="src/ios/CDVBLEFirmata.m"/>
+        <header-file src="src/ios/BLEDefines.h" />
+        <header-file src="src/ios/BLECentral.h" />
+        <source-file src="src/ios/BLECentral.m"/>
+        <header-file src="src/ios/BLEPeripheral.h" />
+        <source-file src="src/ios/BLEPeripheral.m"/>
+        <header-file src="src/ios/CBPeripheral+Extensions.h" />
+        <source-file src="src/ios/CBPeripheral+Extensions.m"/>
+                
+        <!-- frameworks -->
+        <framework src="CoreBluetooth.framework" />
+    </platform>
+</plugin>
