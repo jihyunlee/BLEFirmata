@@ -16,6 +16,8 @@
 
 #import "BLECentral.h"
 
+#define PORT_COUNT 3
+
 @class CDVBLEFirmata;
 
 @protocol BLEFirmataDelegate
@@ -24,6 +26,7 @@
 @interface CDVBLEFirmata : CDVPlugin <BLECentralDelegate> {
     NSString* _scanCallbackId;
     NSString* _connectCallbackId;
+    uint8_t portMasks[PORT_COUNT];   //port # as index
 }
 
 @property (nonatomic,assign) id <BLEFirmataDelegate> delegate;

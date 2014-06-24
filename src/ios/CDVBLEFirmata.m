@@ -29,6 +29,10 @@
     self.CM = [[BLECentral alloc] init];
     self.CM.delegate = self;
     [self.CM initCentral];
+
+    portMasks[0] = 0;
+    portMasks[1] = 0;
+    portMasks[2] = 0;
 }
 
 #pragma mark - Cordova Plugin Methods
