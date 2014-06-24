@@ -35,10 +35,10 @@
     portMasks[2] = 0;
 
     for (int pin = FIRST_DIGITAL_PIN; pin <= LAST_DIGITAL_PIN; pin++) {
-        [self setupPinmode:pin enabled:YES]
+        [self setupPinmode:pin enabled:YES];
     }
     for (int pin = FIRST_ANALOG_PIN; pin <= LAST_ANALOG_PIN; pin++) {
-        [self setupPinmode:pin enabled:YES]
+        [self setupPinmode:pin enabled:YES];
     }
 }
 
