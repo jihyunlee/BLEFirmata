@@ -28,66 +28,74 @@ var LOW = 0;
 var LED_PIN = 4;
 
 var app = {
-
-  initialize: function() {
+    
+initialize: function() {
     this.bindEvents();
-  },
-  bindEvents: function() {
+},
+bindEvents: function() {
     document.addEventListener('deviceready', this.onDeviceReady, false);
-  },
-  onDeviceReady: function() {
-      
+},
+onDeviceReady: function() {
+    
     if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
-
+    
     bleFirmata = new BLEFirmata();
-
+    
     app.setup();
-
-    app.startScan();
-  },
-  setup: function() {
-    // setup pinMode
-    bleFirmata.pinMode(LED_PIN, OUTPUT);
-  },
-  startScan: function() {
-    console.log('\n\nstartScan ----------\n\n');
-
-    var didDiscover = function(peripheral) {
-      var name = '',
-          uuid = '';
-      if(peripheral.hasOwnProperty('localname')) name = peripheral.localname;
-      if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
-
-      console.log('didDiscover -- ', name, uuid);
-
-      if(name == 'UART') {
-        app.stopScan();
-        app.connect(uuid);
-      }
+},
+setup: function() {
+    
+    var didSetupPins = function() {
+        console.log('\n\ndidSetupPins\n\n');
+        app.startScan();
     };
-
+    
+    var didInit = function() {
+        console.log('\n\ndidInit\n\n');
+        // setup pinMode
+        bleFirmata.pinMode(LED_PIN, OUTPUT, didSetupPins, function(err){console.log('initPins Failed');});
+    };
+    bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
+},
+startScan: function() {
+    console.log('\n\nstartScan ----------\n\n');
+    
+    var didDiscover = function(peripheral) {
+        var name = '',
+        uuid = '';
+        if(peripheral.hasOwnProperty('localname')) name = peripheral.localname;
+        if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
+        
+        console.log('didDiscover -- ', name, uuid);
+        
+        if(name == 'UART') {
+            app.stopScan();
+            app.connect(uuid);
+        }
+    };
+    
     bleFirmata.startScan(didDiscover, function(err){console.log('startScan Failed');});
-  },
-  stopScan: function() {
+},
+stopScan: function() {
     console.log('stopScan ----------\n\n');
     bleFirmata.stopScan(function(res){}, function(err){console.log('stopScan Failed');});
-  },
-  connect: function(uuid) {
+},
+connect: function(uuid) {
     console.log('connect --- ');
-
+    
     var didConnect = function(peripheral) {
-      console.log('didConnect --- ', peripheral.name, peripheral.uuid);
-      if(peripheral.uuid == uuid) {
-        console.log('\n\nconnected\n\n');
-      }
+        console.log('didConnect --- ', peripheral.name, peripheral.uuid);
+        if(peripheral.uuid == uuid) {
+            console.log('\n\nconnected\n\n');
+        }
     };
-
-    bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});      
-  },
-  disconnect: function() {
+    
+    bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});
+},
+disconnect: function() {
     var didDisconnect = function() {
-      console.log('didDisconnect --- ');
+        console.log('didDisconnect --- ');
     };
     bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
-  }
+}
 };
