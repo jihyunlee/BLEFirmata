@@ -19,10 +19,6 @@
 
 var bleFirmata;
 
-var INPUT = 0;
-var OUTPUT = 1;
-var ANALOG = 2;
-
 var HIGH = 1;
 var LOW = 0;
 var LED_PIN = 4;
@@ -45,6 +41,8 @@ onDeviceReady: function() {
 },
 setup: function() {
     
+    console.log('setup')
+    
     var didSetupPins = function() {
         console.log('\n\ndidSetupPins\n\n');
         app.startScan();
@@ -53,7 +51,7 @@ setup: function() {
     var didInit = function() {
         console.log('\n\ndidInit\n\n');
         // setup pinMode
-        bleFirmata.pinMode(LED_PIN, OUTPUT, didSetupPins, function(err){console.log('initPins Failed');});
+        bleFirmata.pinMode(LED_PIN, 'OUTPUT', didSetupPins, function(err){console.log('initPins Failed');});
     };
     bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
 },
