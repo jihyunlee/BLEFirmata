@@ -62,10 +62,16 @@ var app = {
     var didConnect = function(peripheral) {
       console.log('didConnect --- ', peripheral.name, peripheral.uuid);
       if(peripheral.uuid == uuid) {
-        console.log('\n\nbox is connected\n\n');
+        console.log('\n\nconnected\n\n');
       }
     };
 
     bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});      
+  },
+  disconnect: function() {
+    var didDisconnect = function() {
+      console.log('didDisconnect --- ');
+    };
+    bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
   }
 };
