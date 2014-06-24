@@ -45,4 +45,9 @@ BLEFirmata.prototype.disconnect = function(successCallback, failureCallback)
 	exec(successCallback, failureCallback, this.serviceName, "disconnect", []);
 }
 
+BLEFirmata.prototype.pinMode = function(pin, mode, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "pinMode", [pin, mode]);
+}
+
 module.exports = BLEFirmata;
