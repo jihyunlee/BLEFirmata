@@ -31,6 +31,8 @@
         <source-file src="src/ios/CDVBLEFirmata.m"/>
         <header-file src="src/ios/BLECentral.h" />
         <source-file src="src/ios/BLECentral.m"/>
+        <header-file src="src/ios/NSData+hex.h" />
+        <source-file src="src/ios/NSData+hex.m"/>
                 
         <!-- frameworks -->
         <framework src="CoreBluetooth.framework" />

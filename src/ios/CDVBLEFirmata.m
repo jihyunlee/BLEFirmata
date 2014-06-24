@@ -21,7 +21,7 @@
 - (void)pluginInitialize {
 
     NSLog(@"------------------------------");
-    NSLog(@" Bluetooth LE Cordova Plugin");
+    NSLog(@" Bluetooth LE Firmata Cordova Plugin");
     NSLog(@" (c)2014 Jihyun Lee");
     NSLog(@"------------------------------");
 
