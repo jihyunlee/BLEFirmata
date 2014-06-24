@@ -45,7 +45,7 @@ BLEFirmata.prototype.disconnect = function(successCallback, failureCallback)
 	exec(successCallback, failureCallback, this.serviceName, "disconnect", []);
 }
 
-BLEFirmata.prototype.initPins = function(pin, mode, successCallback, failureCallback)
+BLEFirmata.prototype.initPins = function(successCallback, failureCallback)
 {
 	exec(successCallback, failureCallback, this.serviceName, "initPins", []);
 }
