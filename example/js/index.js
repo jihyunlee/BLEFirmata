@@ -19,7 +19,16 @@
 
 var bleFirmata;
 
+var INPUT = 0;
+var OUTPUT = 1;
+var ANALOG = 2;
+
+var HIGH = 1;
+var LOW = 0;
+var LED_PIN = 4;
+
 var app = {
+
   initialize: function() {
     this.bindEvents();
   },
@@ -31,7 +40,14 @@ var app = {
     if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
 
     bleFirmata = new BLEFirmata();
+
+    app.setup();
+
     app.startScan();
+  },
+  setup: function() {
+    // setup pinMode
+    bleFirmata.pinMode(LED_PIN, OUTPUT);
   },
   startScan: function() {
     console.log('\n\nstartScan ----------\n\n');
