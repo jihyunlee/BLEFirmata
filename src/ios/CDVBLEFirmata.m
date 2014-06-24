@@ -17,6 +17,20 @@
 @synthesize delegate;
 @synthesize CM;
 
+typedef enum {
+    kPinStateLow  = 0,
+    kPinStateHigh,
+} PinState;
+
+typedef enum {
+    kPinModeUnknown = -1,
+    kPinModeInput,
+    kPinModeOutput,
+    kPinModeAnalog,
+    kPinModePWM,
+    kPinModeServo
+} PinMode;
+
 
 - (void)pluginInitialize {
 
@@ -94,9 +108,44 @@
     
 }
 
+- (void)writePinMode:(PinMode)newMode forPin:(int)pin{
+    
+    NSLog(@"CDVBLEFirmata::writePinMode");
+    
+    //Set a pin's mode
+    
+    uint8_t data0 = 0xf4;        //Status byte == 244
+    uint8_t data1 = pin;        //Pin#
+    uint8_t data2 = newMode;    //Mode
+    
+    uint8_t bytes[3] = {data0, data1, data2};
+    NSData *newData = [[NSData alloc ]initWithBytes:bytes length:3];
+    
+    [self sendData:newData];
+}
+
+- (void)setAnalogValueReportingforAnalogPin:(int)pin enabled:(BOOL)enabled{
+    
+    NSLog(@"CDVBLEFirmata::setAnalogValueReportingforAnalogPin");
+    
+    //Enable analog read for a pin
+    
+    //Enable by pin
+    uint8_t data0 = 0xc0 + pin;          //start analog reporting for pin (192 + pin#)
+    uint8_t data1 = (uint8_t)enabled;    //Enable
+    uint8_t bytes[2] = {data0, data1};
+    NSData *newData = [[NSData alloc ]initWithBytes:bytes length:2];
+    
+    [self sendData:newData];
+}
+
+
+
 #pragma mark - Cordova Plugin Methods
 
 - (void)initPins:(CDVInvokedUrlCommand *)command {
+    
+    NSLog(@"CDVBLEFirmata::initPins");
     
     for (int pin = FIRST_DIGITAL_PIN; pin <= LAST_DIGITAL_PIN; pin++) {
         
@@ -115,47 +164,39 @@
 
 - (void)pinMode:(CDVInvokedUrlCommand *)command {
     
-    int digitalPin = [[command.arguments objectAtIndex:0] intValue];
-    int mode = [[command.arguments objectAtIndex:1] intValue];
+    int pin = [[command.arguments objectAtIndex:0] intValue];
+    NSString *mode = [command.arguments objectAtIndex:1];
 
-    NSLog(@"CDVBLEFirmata::pinMode -- %d -- %d", digitalPin, mode);
+    NSLog(@"CDVBLEFirmata::pinMode -- %d -- %@", pin, mode);
     
-    //Enable input/output for a digital pin
+    PinMode pinMode = kPinModeUnknown;
     
-    //port 0: digital pins 0-7
-    //port 1: digital pins 8-15
-    //port 2: digital pins 16-23
-
-    //find port for pin
-    uint8_t port;
-    uint8_t pin;
-    
-    //find pin for port
-    if (digitalPin <= 7){           //Port 0 (aka port D)
-        port = 0;
-        pin = digitalPin;
-    } else if (digitalPin <= 15){   //Port 1 (aka port B)
-        port = 1;
-        pin = digitalPin - 8;
-    } else{                         //Port 2 (aka port C)
-        port = 2;
-        pin = digitalPin - 16;
+    if ([mode compare:@"INPUT"] == NSOrderedSame) {
+        pinMode = kPinModeInput;
+    }
+    else if ([mode compare:@"OUTPUT"] == NSOrderedSame) {
+        pinMode = kPinModeOutput;
+    }
+    else if ([mode compare:@"ANALOG"] == NSOrderedSame) {
+        pinMode = kPinModeAnalog;
+    }
+    else if ([mode compare:@"PWM"] == NSOrderedSame) {
+        pinMode = kPinModePWM;
+    }
+    else if ([mode compare:@"SERVO"] == NSOrderedSame) {
+        pinMode = kPinModeServo;
     }
     
-    uint8_t data0 = 0xd0 + port;        //start port 0 digital reporting (0xd0 + port#)
-    uint8_t data1 = portMasks[port];    //retrieve saved pin mask for port;
+    //Write pin
+    [self writePinMode:pinMode forPin:pin];
     
-    if (mode == 1)
-        data1 |= (1<<pin);
-    else
-        data1 ^= (1<<pin);
+    //Update reporting for Analog pins
+    if (pinMode == kPinModeAnalog) {
+        [self setAnalogValueReportingforAnalogPin:pin enabled:YES];
+    }
     
-    uint8_t bytes[2] = {data0, data1};
-    NSData *newData = [[NSData alloc ]initWithBytes:bytes length:2];
-    
-    portMasks[port] = data1;    //save new pin mask
-    
-    [self sendData:newData];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)startScan:(CDVInvokedUrlCommand*)command {
