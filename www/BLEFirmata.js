@@ -45,18 +45,4 @@ BLEFirmata.prototype.disconnect = function(successCallback, failureCallback)
 	exec(successCallback, failureCallback, this.serviceName, "disconnect", []);
 }
 
-BLEFirmata.prototype.discoverServicesByUUID = function(serviceUUID, characteristicUUID, successCallback, failureCallback)
-{
-	exec(successCallback, failureCallback, this.serviceName, "discoverServicesByUUID", [serviceUUID, characteristicUUID]);
-}
-
-BLEFirmata.prototype.readValueForCharacteristic = function(serviceUUID, characteristicUUID, successCallback, failureCallback) {
-	exec(successCallback, failureCallback, this.serviceName, "readValueForCharacteristic", [serviceUUID, characteristicUUID]);	
-}
-
-BLEFirmata.prototype.writeValueForCharacteristic = function(serviceUUID, characteristicUUID, data, successCallback, failureCallback)
-{
-    exec(successCallback, failureCallback, this.serviceName, "writeValueForCharacteristic", [serviceUUID, characteristicUUID, data]);
-}
-
 module.exports = BLEFirmata;
