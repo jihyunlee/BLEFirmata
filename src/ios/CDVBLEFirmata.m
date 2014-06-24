@@ -36,26 +36,43 @@
     portMasks[2] = 0;
 }
 
-- (void)setupPinmode:(int)digitalPin enabled:(BOOL)enabled{
+- (void)sendData:(NSData*)newData{
+    
+    //Output data to UART peripheral
+    
+    NSString *hexString = [newData hexRepresentationWithSpaces:YES];
+    NSLog(@"Sending: %@", hexString);
+    
+    // [currentPeripheral writeRawData:newData];
+    
+}
 
+- (void)setDigitalStateReportingforPin:(int)digitalPin enabled:(BOOL)enabled{
+    
+    NSLog(@"CDVBLEFirmata::setDigitalStateReportingforPin");
+    
     //Enable input/output for a digital pin
     
     //port 0: digital pins 0-7
     //port 1: digital pins 8-15
     //port 2: digital pins 16-23
-
+    
     //find port for pin
     uint8_t port;
     uint8_t pin;
     
     //find pin for port
-    if (digitalPin <= 7){           //Port 0 (aka port D)
+    if (digitalPin <= 7){       //Port 0 (aka port D)
         port = 0;
         pin = digitalPin;
-    } else if (digitalPin <= 15){   //Port 1 (aka port B)
+    }
+    
+    else if (digitalPin <= 15){ //Port 1 (aka port B)
         port = 1;
         pin = digitalPin - 8;
-    } else{                         //Port 2 (aka port C)
+    }
+    
+    else{                       //Port 2 (aka port C)
         port = 2;
         pin = digitalPin - 16;
     }
@@ -74,28 +91,34 @@
     portMasks[port] = data1;    //save new pin mask
     
     [self sendData:newData];
-}
-
-- (void)sendData:(NSData*)newData{
-    
-    //Output data to UART peripheral
-    
-    NSString *hexString = [newData hexRepresentationWithSpaces:YES];
-    NSLog(@"Sending: %@", hexString);
-    
-    // [currentPeripheral writeRawData:newData];
     
 }
-
 
 #pragma mark - Cordova Plugin Methods
+
+- (void)initPins:(CDVInvokedUrlCommand *)command {
+    
+    for (int pin = FIRST_DIGITAL_PIN; pin <= LAST_DIGITAL_PIN; pin++) {
+        
+        //Set all pin read reports
+        [self setDigitalStateReportingforPin:pin enabled:YES];
+    }
+    for (int pin = FIRST_ANALOG_PIN; pin <= LAST_ANALOG_PIN; pin++) {
+        
+        //Set all pin read reports
+        [self setDigitalStateReportingforPin:pin enabled:YES];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 
 - (void)pinMode:(CDVInvokedUrlCommand *)command {
     
     int digitalPin = [[command.arguments objectAtIndex:0] intValue];
     int mode = [[command.arguments objectAtIndex:1] intValue];
 
-    NSLog(@"CDVBLEFirmata::pinMode -- %@", digitalPin, mode);
+    NSLog(@"CDVBLEFirmata::pinMode -- %d -- %d", digitalPin, mode);
     
     //Enable input/output for a digital pin
     
