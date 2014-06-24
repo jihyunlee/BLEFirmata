@@ -29,13 +29,8 @@
         
         <header-file src="src/ios/CDVBLEFirmata.h" />
         <source-file src="src/ios/CDVBLEFirmata.m"/>
-        <header-file src="src/ios/BLEDefines.h" />
         <header-file src="src/ios/BLECentral.h" />
         <source-file src="src/ios/BLECentral.m"/>
-        <header-file src="src/ios/BLEPeripheral.h" />
-        <source-file src="src/ios/BLEPeripheral.m"/>
-        <header-file src="src/ios/CBPeripheral+Extensions.h" />
-        <source-file src="src/ios/CBPeripheral+Extensions.m"/>
                 
         <!-- frameworks -->
         <framework src="CoreBluetooth.framework" />
