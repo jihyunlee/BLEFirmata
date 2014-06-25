@@ -23,6 +23,8 @@ var HIGH = 1;
 var LOW = 0;
 var LED_PIN = 4;
 
+var ledOn = false;
+
 var app = {
     
 initialize: function() {
@@ -34,6 +36,8 @@ bindEvents: function() {
 onDeviceReady: function() {
     
     if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
+    
+    myonoffswitch.ontouchstart = app.ledButton;
     
     bleFirmata = new BLEFirmata();
     
@@ -95,5 +99,13 @@ disconnect: function() {
         console.log('didDisconnect --- ');
     };
     bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
+},
+ledButton: function() {
+    console.log('ledButton');
+//    if(ledOn) {
+//        
+//    } else {
+//        bleFirmata.
+//    }
 }
 };
