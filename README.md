@@ -1,7 +1,7 @@
 Bluetooth LE Plugin for PhoneGap
 =============
 
-This is work in progress. **Everything may change."<br/>
+This is work in progress. **Everything may change.**<br/>
 If you encounter bugs, please let me know <a href="https://github.com/jihyunlee/BLEFirmata/issues">here</a>. Thank you!
 
 
