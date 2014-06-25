@@ -24,127 +24,97 @@ var LOW = 0;
 var LED_PIN = 4;
 var SWITCH_PIN = 5;
 
-var ledOn = false;
-
 var app = {
     
-initialize: function() {
-    this.bindEvents();
-},
-bindEvents: function() {
-    document.addEventListener('deviceready', this.onDeviceReady, false);
-},
-onDeviceReady: function() {
-    
-    if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
-    
-    bleFirmata = new BLEFirmata();
-    
-    $('#myonoffswitch').click(function() {
-                              if($('#myonoffswitch').prop('checked'))
-                              bleFirmata.digitalWrite(LED_PIN, HIGH);
-                              else bleFirmata.digitalWrite(LED_PIN, LOW);
-                              });
-    
-    app.startScan();
-},
-startScan: function() {
-    console.log('\n\nstartScan ----------\n\n');
-    
-    var didDiscover = function(peripheral) {
-        var name = '',
-        uuid = '';
-        if(peripheral.hasOwnProperty('localname')) name = peripheral.localname;
-        if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
+    initialize: function() {
+        this.bindEvents();
+    },
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    onDeviceReady: function() {
         
-        console.log('didDiscover -- ', name, uuid);
+        if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
         
-        if(name == 'UART') {
-            app.stopScan();
-            app.connect(uuid);
-        }
-    };
-    
-    bleFirmata.startScan(didDiscover, function(err){console.log('startScan Failed');});
-},
-stopScan: function() {
-    console.log('stopScan ----------\n\n');
-    bleFirmata.stopScan(function(res){}, function(err){console.log('stopScan Failed');});
-},
-connect: function(uuid) {
-    console.log('connect --- ');
-    
-    var didConnect = function(peripheral) {
-        console.log('didConnect --- ', peripheral.name, peripheral.uuid);
-        if(peripheral.uuid == uuid) {
-            console.log('\n\nconnected\n\n');
-        }
-        app.setup();
-    };
-    
-    bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});
-},
-disconnect: function() {
-    var didDisconnect = function() {
-        console.log('didDisconnect --- ');
-    };
-    bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
-},
-setup: function() {
-    
-    console.log('setup')
-    var didsetupSwitch = function() {
-        console.log('didsetupSwitch');
-        app.loop();
-    };
-    
-    var didSetupPins = function() {
-        console.log('\n\ndidSetupPins\n\n');
-        bleFirmata.pinMode(SWITCH_PIN, 'INPUT', didsetupSwitch, function(err){console.log('pinMode Failed');});
-    };
-    
-    var didInit = function() {
-        console.log('\n\ndidInit\n\n');
-        // setup pinMode
-        bleFirmata.pinMode(LED_PIN, 'OUTPUT', didSetupPins, function(err){console.log('pinMode Failed');});
-    };
-    bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
-    
-},
-loop: function() {
+        bleFirmata = new BLEFirmata();
+        
+        $('#myonoffswitch').click(function() {
+            if($('#myonoffswitch').prop('checked'))
+                 bleFirmata.digitalWrite(LED_PIN, HIGH);
+            else bleFirmata.digitalWrite(LED_PIN, LOW);
+        });
+        
+        app.startScan();
+    },
+    startScan: function() {
 
-    console.log('\n\n');
-    
-    var toggleLED = function() {
-        console.log('toggleLED');
-        app.loop();
-    };
-    var readSwitch = function(value) {
-        console.log('readSwitch', value);
-        value = parseInt(value);
-        if(value != LOW && value != HIGH) {
-            console.log('invalid value');
+        var didDiscover = function(peripheral) {
+            var name = '',
+                uuid = '';
+            if(peripheral.hasOwnProperty('localname')) name = peripheral.localname;
+            if(peripheral.hasOwnProperty('uuid')) uuid = peripheral.uuid;
+                        
+            if(name == 'UART') {
+                app.stopScan();
+                app.connect(uuid);
+            }
+        };
+        
+        bleFirmata.startScan(didDiscover, function(err){console.log('startScan Failed');});
+    },
+    stopScan: function() {
+
+        bleFirmata.stopScan(function(res){}, function(err){console.log('stopScan Failed');});
+    },
+    connect: function(uuid) {  
+
+        var didConnect = function(peripheral) {
+            if(peripheral.uuid == uuid) {
+                console.log('\n\nconnected\n\n');
+            }
+            app.setup();
+        };
+        
+        bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});
+    },
+    disconnect: function() {
+
+        var didDisconnect = function() {
+        };
+        bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
+    },
+    setup: function() {
+
+        var didsetupSwitch = function() {
             app.loop();
-            return;
-        }
+        };
         
-//        value = parseInt(value);
+        var didSetupPins = function() {
+            bleFirmata.pinMode(SWITCH_PIN, 'INPUT', didsetupSwitch, function(err){console.log('pinMode Failed');});
+        };
         
-//        if(value == LOW)
+        var didInit = function() {
+            bleFirmata.pinMode(LED_PIN, 'OUTPUT', didSetupPins, function(err){console.log('pinMode Failed');});
+        };
+
+        bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
+    },
+    loop: function() {
+
+        var toggleLED = function() {
+            app.loop();
+        };
+        var readSwitch = function(value) {
+            value = parseInt(value);
+            if(value != LOW && value != HIGH) {
+                console.log('invalid value');
+                app.loop();
+                return;
+            }
+            
             bleFirmata.digitalWrite(LED_PIN, value, toggleLED);
-//        else if(value == 1)
-//            bleFirmata.digitalWrite(LED_PIN, HIGH, toggleLED);
-    };
-    
-    bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
-},
-delay: function(milliseconds) {
-    console.log('delay', milliseconds);
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds){
-            break;
-        }
+        };
+        
+        bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
     }
-}
 };
