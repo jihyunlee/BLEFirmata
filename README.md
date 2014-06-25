@@ -13,12 +13,22 @@ iOS devices with Bluetooth 4.0 (iPhone 4S and later, iPad (3rd generation) and l
 
 ## Methods
 #### startScan
+    bleFirmata.startScan(successCallback, failureCallback);
 #### stopScan
+    bleFirmata.stopScan(successCallback, failureCallback);
 #### connect
+    bleFirmata.connect(uuid, successCallback, failureCallback);
 #### disconnect
+    bleFirmata.disconnect(successCallback, failureCallback);
 #### initPins
+    bleFirmata.initPins(successCallback, failureCallback);
 #### pinMode
+    bleFirmata.pinMode(pin, mode, successCallback, failureCallback);
 #### digitalWrite
+    bleFirmata.digitalWrite(pin, value, successCallback, failureCallback);
 #### digitalRead
+    bleFirmata.digitalRead(pin, successCallback, failureCallback);
 #### analogRead
+    bleFirmata.analogRead(pin, successCallback, failureCallback);
 #### analogWrite
+    bleFirmata.analogWrite(pin, value, successCallback, failureCallback);
