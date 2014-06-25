@@ -33,6 +33,14 @@
 @interface CDVBLEFirmata : CDVPlugin <BLECentralDelegate> {
     NSString* _scanCallbackId;
     NSString* _connectCallbackId;
+    
+    NSString* _pin3CallbackId;
+    NSString* _pin4CallbackId;
+    NSString* _pin5CallbackId;
+    NSString* _pin6CallbackId;
+    NSString* _pin7CallbackId;
+    NSString* _pin8CallbackId;
+    
     uint8_t portMasks[PORT_COUNT];   //port # as index
 }
 

@@ -48,6 +48,13 @@ typedef enum {
     portMasks[0] = 0;
     portMasks[1] = 0;
     portMasks[2] = 0;
+    
+    _pin3CallbackId = nil;
+    _pin4CallbackId = nil;
+    _pin5CallbackId = nil;
+    _pin6CallbackId = nil;
+    _pin7CallbackId = nil;
+    _pin8CallbackId = nil;
 }
 
 - (void)sendData:(NSData*)newData{
@@ -286,30 +293,84 @@ typedef enum {
     
     NSLog(@"BLECentral::updateForPinStates -- %d", pinStates);
     
-//    //Update pin table with new pin values received
-//    
-//    int offset = 8 * port;
-//    
-//    //Iterate through all  pins
-//    for (int i = 0; i <= 7; i++) {
-//        
-//        uint8_t state = pinStates;
-//        uint8_t mask = 1 << i;
-//        state = state & mask;
-//        state = state >> i;
-//        
-//        //        int cellIndex = i + offset;
-//        //
-//        //        if (cellIndex <= (cells.count-1)) {
-//        //
-//        //            PinCell *cell = [self pinCellForpin:cellIndex];
-//        //            if (cell && (cell.mode == kPinModeInput || cell.mode == kPinModeOutput)) {
-//        //
-//        //                [cell setDigitalValue:state];
-//        //            }
-//        //
-//        //        }
-//    }
+    //Update pin table with new pin values received
+    
+    if(_pin3CallbackId) {
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << 3;
+        state = state & mask;
+        state = state >> 3;
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus : CDVCommandStatus_OK messageAsInt : (int)state];
+        [self.commandDelegate sendPluginResult : pluginResult callbackId : _pin3CallbackId];
+        _pin3CallbackId = nil;
+    }
+
+    if(_pin4CallbackId) {
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << 4;
+        state = state & mask;
+        state = state >> 4;
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus : CDVCommandStatus_OK messageAsInt : (int)state];
+        [self.commandDelegate sendPluginResult : pluginResult callbackId : _pin4CallbackId];
+        _pin4CallbackId = nil;
+    }
+    
+    if(_pin5CallbackId) {
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << 5;
+        state = state & mask;
+        state = state >> 5;
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus : CDVCommandStatus_OK messageAsInt : (int)state];
+        [self.commandDelegate sendPluginResult : pluginResult callbackId : _pin5CallbackId];
+        _pin5CallbackId = nil;
+    }
+    
+    if(_pin6CallbackId) {
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << 6;
+        state = state & mask;
+        state = state >> 6;
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus : CDVCommandStatus_OK messageAsInt : (int)state];
+        [self.commandDelegate sendPluginResult : pluginResult callbackId : _pin6CallbackId];
+        _pin6CallbackId = nil;
+    }
+
+    if(_pin7CallbackId) {
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << 7;
+        state = state & mask;
+        state = state >> 7;
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus : CDVCommandStatus_OK messageAsInt : (int)state];
+        [self.commandDelegate sendPluginResult : pluginResult callbackId : _pin7CallbackId];
+        _pin7CallbackId = nil;
+    }
+    
+    
+    //Iterate through all  pins
+    for (int i = 0; i <= 7; i++) {
+        
+        uint8_t state = pinStates;
+        uint8_t mask = 1 << i;
+        state = state & mask;
+        state = state >> i;
+        
+        NSLog(@"%d -- %d", i, state );
+        
+        
+        
+        //        int cellIndex = i + offset;
+        //
+        //        if (cellIndex <= (cells.count-1)) {
+        //
+        //            PinCell *cell = [self pinCellForpin:cellIndex];
+        //            if (cell && (cell.mode == kPinModeInput || cell.mode == kPinModeOutput)) {
+        //
+        //                [cell setDigitalValue:state];
+        //            }
+        //
+        //        }
+    }
+    
     
     //Save reference state mask
     portMasks[port] = pinStates;
@@ -378,7 +439,7 @@ typedef enum {
     if (pinMode == kPinModeAnalog) {
         [self setAnalogValueReportingforAnalogPin:pin enabled:YES];
     }
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -390,8 +451,9 @@ typedef enum {
 //    NSString *value = [command.arguments objectAtIndex:1];
 
     NSLog(@"CDVBLEFirmata::digitalWrite -- %d -- %d", pin, value);
-
+    
     [self writePinState:value forPin:pin];
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -401,9 +463,20 @@ typedef enum {
     int pin = [[command.arguments objectAtIndex:0] intValue];
 
     NSLog(@"CDVBLEFirmata::digitalRead -- %d", pin);
-
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    
+    if (pin>=3 && pin <=8){
+        switch(pin) {
+            case 3: _pin3CallbackId = command.callbackId; break;
+            case 4: _pin4CallbackId = command.callbackId; break;
+            case 5: _pin5CallbackId = command.callbackId; break;
+            case 6: _pin6CallbackId = command.callbackId; break;
+            case 7: _pin7CallbackId = command.callbackId; break;
+            case 8: _pin8CallbackId = command.callbackId; break;
+        }
+    } else {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
 }
 
 - (void)analogWrite:(CDVInvokedUrlCommand *)command {
