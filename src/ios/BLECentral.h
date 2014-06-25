@@ -21,6 +21,10 @@
 @interface BLECentral : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate> {
     NSString* _serviceUUID;
     NSString* _characteristicUUID;
+    
+    CBService *uartService;
+    CBCharacteristic *rxCharacteristic;
+    CBCharacteristic *txCharacteristic;
 }
 
 @property (nonatomic,assign) id <BLECentralDelegate> delegate;
@@ -34,8 +38,6 @@
 
 // ready
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central;
-- (BOOL)isReady;
-- (int)getState;
 
 // scan
 - (void)startScan;
@@ -47,6 +49,8 @@
 // connect
 - (void)connect:(NSString*)uuid;
 - (void)disconnect;
+
+- (void)writeRawData:(NSData*)data;
 
 - (UInt16)swap:(UInt16) s;
 - (int)compareCBUUID:(CBUUID *) UUID1 UUID2:(CBUUID *)UUID2;

@@ -15,6 +15,35 @@ static bool ready = false;
 static int state = -1;
 
 
+#pragma mark - UUID Retrieval
+
+
++ (CBUUID*)uartServiceUUID{
+    
+    return [CBUUID UUIDWithString:@"6e400001-b5a3-f393-e0a9-e50e24dcca9e"];
+}
+
++ (CBUUID*)txCharacteristicUUID{
+    
+    return [CBUUID UUIDWithString:@"6e400002-b5a3-f393-e0a9-e50e24dcca9e"];
+}
+
++ (CBUUID*)rxCharacteristicUUID{
+    
+    return [CBUUID UUIDWithString:@"6e400003-b5a3-f393-e0a9-e50e24dcca9e"];
+}
+
++ (CBUUID*)deviceInformationServiceUUID{
+    
+    return [CBUUID UUIDWithString:@"180A"];
+}
+
++ (CBUUID*)hardwareRevisionStringUUID{
+    
+    return [CBUUID UUIDWithString:@"2A27"];
+}
+
+
 #pragma mark - init
 
 - (id)init {
@@ -127,20 +156,13 @@ static int state = -1;
 }
 #endif
 
--(BOOL) isReady {
-  return ready;
-}
-
--(int) getState {
-  return state;
-}
 
 
 
 
 - (void)startScan {
     
-  NSLog(@"\n\nBLECentral::startScan\n\n");
+    NSLog(@"\n\nBLECentral::startScan\n\n");
 
   if (self.activePeripheral) {
     if(self.activePeripheral.isConnected) {
@@ -195,6 +217,8 @@ static int state = -1;
   [self.activePeripheral setDelegate:self];
   NSDictionary* dic = [NSDictionary dictionaryWithObjectsAndKeys: peripheral.name, @"name", [peripheral.identifier UUIDString], @"uuid", nil];
   [[self delegate] didConnect:dic];
+    
+    [peripheral discoverServices:@[self.class.uartServiceUUID, self.class.deviceInformationServiceUUID]];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
@@ -209,9 +233,85 @@ static int state = -1;
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
-  NSLog(@"[BLECentral] didDisconnectPeripheral");
+  NSLog(@"BLECentral::didDisconnectPeripheral");
   [[self delegate] didDisconnect];
 }
+
+- (void)peripheral:(CBPeripheral*)peripheral didDiscoverServices:(NSError*)error{
+    
+    NSLog(@"BLECentral::didDiscoverServices");
+    
+    if (!error) {
+        
+        for (CBService *s in [peripheral services]){
+            
+            if (s.characteristics){ //already discovered characteristic before, DO NOT do it again
+                
+                [self peripheral:peripheral didDiscoverCharacteristicsForService:s error:nil];
+                
+            } else if([s.UUID isEqual:self.class.uartServiceUUID]) {
+                
+                printf("UART service Found\r\n");
+                uartService = s;
+                [peripheral discoverCharacteristics:@[self.class.txCharacteristicUUID, self.class.rxCharacteristicUUID] forService:uartService];
+                
+            } else if([s.UUID isEqual:self.class.deviceInformationServiceUUID]) {
+
+                [peripheral discoverCharacteristics:@[self.class.hardwareRevisionStringUUID] forService:s];
+                
+            }
+        }
+    } else{
+        
+        printf("Error discovering services\r\n");
+//        [_delegate uartDidEncounterError:@"Error discovering services"];
+        return;
+    }
+}
+
+- (void)peripheral:(CBPeripheral*)peripheral didDiscoverCharacteristicsForService:(CBService*)service error:(NSError*)error{
+    
+    NSLog(@"BLECentral::didDiscoverCharacteristicsForService");
+    
+    if (!error){
+        
+        CBService *s = [peripheral.services objectAtIndex:(peripheral.services.count - 1)];
+        
+        if([s.UUID isEqual:service.UUID]) {
+            
+            for (CBService *s in peripheral.services) {
+            
+                for (CBCharacteristic *c in [s characteristics]){
+                    
+                    if([c.UUID isEqual:self.class.rxCharacteristicUUID]) {
+                        
+                        printf("RX characteristic Found\r\n");
+                        rxCharacteristic = c;
+                        [peripheral setNotifyValue:YES forCharacteristic:rxCharacteristic];
+                        
+                    } else if([c.UUID isEqual:self.class.txCharacteristicUUID]) {
+                        
+                        printf("TX characteristic Found \r\n");
+                        txCharacteristic = c;
+                        
+                    } else if([c.UUID isEqual:self.class.hardwareRevisionStringUUID]) {
+                        
+                        printf("Found Hardware Revision String characteristic\r\n");
+                        [peripheral readValueForCharacteristic:c];
+                        //Once hardware revision string is read connection will be complete …
+                    }
+                }
+            }
+        }
+    } else{
+        
+        printf("Error discovering characteristics: %s\r\n", [error.description UTF8String]);
+//        [_delegate uartDidEncounterError:@"Error discovering characteristics"];
+        return;
+    }
+}
+
+
 
 - (CBPeripheral*)getPeripheralByUUID:(NSString*)uuid {
 
@@ -227,7 +327,11 @@ static int state = -1;
   return peripheral;
 }
 
-
+- (void)writeRawData:(NSData*)data{
+    
+    //Send data to peripheral
+    [self.activePeripheral writeValue:data forCharacteristic:txCharacteristic type:CBCharacteristicWriteWithoutResponse];
+}
 
 -(NSString *) CBUUIDToString:(CBUUID *)cbuuid {
   NSData *d = cbuuid.data;
