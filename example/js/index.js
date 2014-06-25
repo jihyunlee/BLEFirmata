@@ -107,7 +107,6 @@ var app = {
         var readSwitch = function(value) {
             value = parseInt(value);
             if(value != LOW && value != HIGH) {
-                console.log('invalid value');
                 app.loop();
                 return;
             }
