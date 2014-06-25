@@ -286,30 +286,30 @@ typedef enum {
     
     NSLog(@"BLECentral::updateForPinStates -- %d", pinStates);
     
-    //Update pin table with new pin values received
-    
-    int offset = 8 * port;
-    
-    //Iterate through all  pins
-    for (int i = 0; i <= 7; i++) {
-        
-        uint8_t state = pinStates;
-        uint8_t mask = 1 << i;
-        state = state & mask;
-        state = state >> i;
-        
-        //        int cellIndex = i + offset;
-        //
-        //        if (cellIndex <= (cells.count-1)) {
-        //
-        //            PinCell *cell = [self pinCellForpin:cellIndex];
-        //            if (cell && (cell.mode == kPinModeInput || cell.mode == kPinModeOutput)) {
-        //
-        //                [cell setDigitalValue:state];
-        //            }
-        //
-        //        }
-    }
+//    //Update pin table with new pin values received
+//    
+//    int offset = 8 * port;
+//    
+//    //Iterate through all  pins
+//    for (int i = 0; i <= 7; i++) {
+//        
+//        uint8_t state = pinStates;
+//        uint8_t mask = 1 << i;
+//        state = state & mask;
+//        state = state >> i;
+//        
+//        //        int cellIndex = i + offset;
+//        //
+//        //        if (cellIndex <= (cells.count-1)) {
+//        //
+//        //            PinCell *cell = [self pinCellForpin:cellIndex];
+//        //            if (cell && (cell.mode == kPinModeInput || cell.mode == kPinModeOutput)) {
+//        //
+//        //                [cell setDigitalValue:state];
+//        //            }
+//        //
+//        //        }
+//    }
     
     //Save reference state mask
     portMasks[port] = pinStates;
