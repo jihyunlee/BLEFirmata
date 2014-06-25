@@ -22,6 +22,7 @@ var bleFirmata;
 var HIGH = 1;
 var LOW = 0;
 var LED_PIN = 4;
+var SWITCH_PIN = 5;
 
 var ledOn = false;
 
@@ -40,27 +41,12 @@ onDeviceReady: function() {
     bleFirmata = new BLEFirmata();
     
     $('#myonoffswitch').click(function() {
-        if($('#myonoffswitch').prop('checked'))
-             bleFirmata.digitalWrite(LED_PIN, HIGH);
-        else bleFirmata.digitalWrite(LED_PIN, LOW);
-    });
+                              if($('#myonoffswitch').prop('checked'))
+                              bleFirmata.digitalWrite(LED_PIN, HIGH);
+                              else bleFirmata.digitalWrite(LED_PIN, LOW);
+                              });
     
     app.startScan();
-},
-setup: function() {
-    
-    console.log('setup')
-    
-    var didSetupPins = function() {
-        console.log('\n\ndidSetupPins\n\n');
-    };
-    
-    var didInit = function() {
-        console.log('\n\ndidInit\n\n');
-        // setup pinMode
-        bleFirmata.pinMode(LED_PIN, 'OUTPUT', didSetupPins, function(err){console.log('initPins Failed');});
-    };
-    bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
 },
 startScan: function() {
     console.log('\n\nstartScan ----------\n\n');
@@ -103,5 +89,40 @@ disconnect: function() {
         console.log('didDisconnect --- ');
     };
     bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
+},
+setup: function() {
+    
+    console.log('setup')
+    var didsetupSwitch = function() {
+        
+    };
+    
+    var didSetupPins = function() {
+        console.log('\n\ndidSetupPins\n\n');
+        bleFirmata.pinMode(SWITCH_PIN, 'INPUT', didsetupSwitch, function(err){console.log('pinMode Failed');});
+    };
+    
+    var didInit = function() {
+        console.log('\n\ndidInit\n\n');
+        // setup pinMode
+        bleFirmata.pinMode(LED_PIN, 'OUTPUT', didSetupPins, function(err){console.log('pinMode Failed');});
+    };
+    bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
+    
+    app.loop();
+},
+loop: function() {
+    setTimeout(function() {
+        
+        var readSwitch = function(value) {
+            console.log('readSwitch', value);
+            bleFirmata.digitalWrite(LED_PIN, HIGH, )
+        };
+        // just like Arduino's Loop
+        bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
+               
+        
+        app.loop();
+    }, 500);
 }
 };
