@@ -116,7 +116,7 @@ loop: function() {
         
         var readSwitch = function(value) {
             console.log('readSwitch', value);
-            bleFirmata.digitalWrite(LED_PIN, HIGH, )
+            bleFirmata.digitalWrite(LED_PIN, HIGH);
         };
         // just like Arduino's Loop
         bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
