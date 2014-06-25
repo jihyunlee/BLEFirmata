@@ -94,7 +94,8 @@ setup: function() {
     
     console.log('setup')
     var didsetupSwitch = function() {
-        
+        console.log('didsetupSwitch');
+        app.loop();
     };
     
     var didSetupPins = function() {
@@ -109,20 +110,41 @@ setup: function() {
     };
     bleFirmata.initPins(didInit, function(err){console.log('initPins Failed');});
     
-    app.loop();
 },
 loop: function() {
-    setTimeout(function() {
-        
-        var readSwitch = function(value) {
-            console.log('readSwitch', value);
-            bleFirmata.digitalWrite(LED_PIN, HIGH);
-        };
-        // just like Arduino's Loop
-        bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
-               
-        
+
+    console.log('\n\n');
+    
+    var toggleLED = function() {
+        console.log('toggleLED');
         app.loop();
-    }, 500);
+    };
+    var readSwitch = function(value) {
+        console.log('readSwitch', value);
+        value = parseInt(value);
+        if(value != LOW && value != HIGH) {
+            console.log('invalid value');
+            app.loop();
+            return;
+        }
+        
+//        value = parseInt(value);
+        
+//        if(value == LOW)
+            bleFirmata.digitalWrite(LED_PIN, value, toggleLED);
+//        else if(value == 1)
+//            bleFirmata.digitalWrite(LED_PIN, HIGH, toggleLED);
+    };
+    
+    bleFirmata.digitalRead(SWITCH_PIN, readSwitch, function(err){console.log('readSwitch Failed');});
+},
+delay: function(milliseconds) {
+    console.log('delay', milliseconds);
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
 }
 };
