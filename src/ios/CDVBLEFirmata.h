@@ -39,14 +39,19 @@
 @property (nonatomic,assign) id <BLEFirmataDelegate> delegate;
 @property (strong, nonatomic) BLECentral *CM;
 
+- (void)initPins:(CDVInvokedUrlCommand *)command;
+- (void)pinMode:(CDVInvokedUrlCommand *)command;
+
+- (void)digitalWrite:(CDVInvokedUrlCommand *)command;
+- (void)digitalRead:(CDVInvokedUrlCommand *)command;
+- (void)analogWrite:(CDVInvokedUrlCommand *)command;
+- (void)analogRead:(CDVInvokedUrlCommand *)command;
+
 - (void)startScan:(CDVInvokedUrlCommand*)command;
 - (void)stopScan:(CDVInvokedUrlCommand*)command;
 
 - (void)connect:(CDVInvokedUrlCommand *)command;
 - (void)disconnect:(CDVInvokedUrlCommand *)command;
-
-- (void)initPins:(CDVInvokedUrlCommand *)command;
-- (void)pinMode:(CDVInvokedUrlCommand *)command;
 
 @end
 

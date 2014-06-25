@@ -25,6 +25,36 @@ var BLEFirmata = function() {
 	this.serviceName = "BLEFirmata";
 };
 
+BLEFirmata.prototype.initPins = function(successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "initPins", []);
+}
+
+BLEFirmata.prototype.pinMode = function(pin, mode, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "pinMode", [pin, mode]);
+}
+
+BLEFirmata.prototype.digitalWrite = function(pin, value, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "digitalWrite", [pin, value]);
+}
+
+BLEFirmata.prototype.digitalRead = function(pin, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "digitalRead", [pin]);
+}
+
+BLEFirmata.prototype.analogRead = function(pin, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "analogRead", [pin]);
+}
+
+BLEFirmata.prototype.analogWrite = function(pin, value, successCallback, failureCallback)
+{
+	exec(successCallback, failureCallback, this.serviceName, "analogWrite", [pin, value]);
+}
+
 BLEFirmata.prototype.startScan = function(successCallback, failureCallback)
 {
 	exec(successCallback, failureCallback, this.serviceName, "startScan", []);
@@ -43,16 +73,6 @@ BLEFirmata.prototype.connect = function(UUID, successCallback, failureCallback)
 BLEFirmata.prototype.disconnect = function(successCallback, failureCallback)
 {
 	exec(successCallback, failureCallback, this.serviceName, "disconnect", []);
-}
-
-BLEFirmata.prototype.initPins = function(successCallback, failureCallback)
-{
-	exec(successCallback, failureCallback, this.serviceName, "initPins", []);
-}
-
-BLEFirmata.prototype.pinMode = function(pin, mode, successCallback, failureCallback)
-{
-	exec(successCallback, failureCallback, this.serviceName, "pinMode", [pin, mode]);
 }
 
 module.exports = BLEFirmata;
