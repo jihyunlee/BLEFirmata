@@ -28,7 +28,7 @@ iOS devices with Bluetooth 4.0 (iPhone 4S and later, iPad (3rd generation) and l
     bleFirmata.digitalWrite(pin, value, successCallback, failureCallback);
 #### digitalRead
     bleFirmata.digitalRead(pin, successCallback, failureCallback);
-#### analogRead
+#### analogRead (in-progress)
     bleFirmata.analogRead(pin, successCallback, failureCallback);
-#### analogWrite
+#### analogWrite (in-progress)
     bleFirmata.analogWrite(pin, value, successCallback, failureCallback);
