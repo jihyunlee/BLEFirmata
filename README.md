@@ -1,4 +1,4 @@
-Bluetooth LE Plugin for PhoneGap
+Bluetooth LE+Firmata Plugin for PhoneGap
 =============
 
 This is work in progress. **Everything may change.**<br/>
