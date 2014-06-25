@@ -3,7 +3,6 @@
 
 #import "BLECentral.h"
 
-
 @implementation BLECentral
 
 @synthesize delegate;
@@ -215,8 +214,6 @@ static int state = -1;
   NSLog(@"BLECentral::didConnectPeripheral -- %@", peripheral.name);
   self.activePeripheral = peripheral;
   [self.activePeripheral setDelegate:self];
-  NSDictionary* dic = [NSDictionary dictionaryWithObjectsAndKeys: peripheral.name, @"name", [peripheral.identifier UUIDString], @"uuid", nil];
-  [[self delegate] didConnect:dic];
     
     [peripheral discoverServices:@[self.class.uartServiceUUID, self.class.deviceInformationServiceUUID]];
 }
@@ -282,12 +279,12 @@ static int state = -1;
             for (CBService *s in peripheral.services) {
             
                 for (CBCharacteristic *c in [s characteristics]){
-                    
+
                     if([c.UUID isEqual:self.class.rxCharacteristicUUID]) {
                         
                         printf("RX characteristic Found\r\n");
                         rxCharacteristic = c;
-                        [peripheral setNotifyValue:YES forCharacteristic:rxCharacteristic];
+                        [self.activePeripheral setNotifyValue:YES forCharacteristic:rxCharacteristic];
                         
                     } else if([c.UUID isEqual:self.class.txCharacteristicUUID]) {
                         
@@ -297,11 +294,15 @@ static int state = -1;
                     } else if([c.UUID isEqual:self.class.hardwareRevisionStringUUID]) {
                         
                         printf("Found Hardware Revision String characteristic\r\n");
-                        [peripheral readValueForCharacteristic:c];
+//                        [peripheral readValueForCharacteristic:c];
                         //Once hardware revision string is read connection will be complete …
                     }
                 }
             }
+            
+            NSDictionary* dic = [NSDictionary dictionaryWithObjectsAndKeys: self.activePeripheral.name, @"name", [self.activePeripheral.identifier UUIDString], @"uuid", nil];
+            [[self delegate] didConnect:dic];
+
         }
     } else{
         
@@ -311,7 +312,26 @@ static int state = -1;
     }
 }
 
-
+- (void)peripheral:(CBPeripheral*)peripheral didUpdateValueForCharacteristic:(CBCharacteristic*)characteristic error:(NSError*)error{
+    
+    NSLog(@"BLECentral::didUpdateValueForCharacteristic");
+    
+    //Respond to value change on peripheral
+    
+    if (!error){
+        if (characteristic == rxCharacteristic){
+            
+            NSLog(@"Received: %@", [characteristic value]);
+            
+            [self.delegate didReceiveData:[characteristic value]];
+            
+        }
+    } else{
+        printf("Error receiving notification for characteristic %s: %s\r\n", [characteristic.description UTF8String], [error.description UTF8String]);
+//        [_delegate uartDidEncounterError:@"Error receiving notification for characteristic"];
+        return;
+    }
+}
 
 - (CBPeripheral*)getPeripheralByUUID:(NSString*)uuid {
 
@@ -332,6 +352,8 @@ static int state = -1;
     //Send data to peripheral
     [self.activePeripheral writeValue:data forCharacteristic:txCharacteristic type:CBCharacteristicWriteWithoutResponse];
 }
+
+
 
 -(NSString *) CBUUIDToString:(CBUUID *)cbuuid {
   NSData *d = cbuuid.data;

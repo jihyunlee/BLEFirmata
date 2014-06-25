@@ -15,6 +15,7 @@
 - (void)didConnect:(NSDictionary *)dic;
 - (void)didFailToConnect;
 - (void)didDisconnect;
+- (void)didReceiveData:(NSData*)newData;
 @required
 @end
 
