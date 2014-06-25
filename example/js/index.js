@@ -37,11 +37,15 @@ onDeviceReady: function() {
     
     if(window.cordova.logger) window.cordova.logger.__onDeviceReady();
     
-    myonoffswitch.ontouchstart = app.ledButton;
-    
     bleFirmata = new BLEFirmata();
     
-    app.setup();
+    $('#myonoffswitch').click(function() {
+        if($('#myonoffswitch').prop('checked'))
+             bleFirmata.digitalWrite(LED_PIN, HIGH);
+        else bleFirmata.digitalWrite(LED_PIN, LOW);
+    });
+    
+    app.startScan();
 },
 setup: function() {
     
@@ -49,7 +53,6 @@ setup: function() {
     
     var didSetupPins = function() {
         console.log('\n\ndidSetupPins\n\n');
-        app.startScan();
     };
     
     var didInit = function() {
@@ -90,6 +93,7 @@ connect: function(uuid) {
         if(peripheral.uuid == uuid) {
             console.log('\n\nconnected\n\n');
         }
+        app.setup();
     };
     
     bleFirmata.connect(uuid, didConnect, function(err){console.log('connect Failed',uuid);});
@@ -99,13 +103,5 @@ disconnect: function() {
         console.log('didDisconnect --- ');
     };
     bleFirmata.disconnect(didDisconnect, function(err){console.log('disconnect Failed');});
-},
-ledButton: function() {
-    console.log('ledButton');
-//    if(ledOn) {
-//        
-//    } else {
-//        bleFirmata.
-//    }
 }
 };
